@@ -1,14 +1,13 @@
 var lastCheck = new Date().getTime() - 60000;
 var scheduledAlert;
 var apiKey;
-var minReviews;
 var error = "";
 var urlToVisit = "chrome://extensions/?options=" + chrome.runtime.id;
 
 run();
 
 function run() {
-	chrome.storage.sync.get(["apiKey", "minReviews", "notNewlyInstalled"], loadSettings);
+	chrome.storage.sync.get(["apiKey", "notNewlyInstalled"], loadSettings);
 }
 
 // Initialize extension
@@ -19,9 +18,8 @@ function loadSettings(data) {
 		else chrome.tabs.create({ url: urlToVisit });
 	});
 	
-	if (data.apiKey && data.apiKey.length > 0 && data.minReviews && data.minReviews > 0) {
+	if (data.apiKey && data.apiKey.length > 0) {
 		apiKey = data.apiKey;
-		minReviews = data.minReviews;
 		
 		// Perform initial status check
 		check();
@@ -34,7 +32,7 @@ function loadSettings(data) {
 			chrome.tabs.query({ "active": true, "currentWindow": true }, function(tabs) {
 				if (typeof tabs[0] !== "undefined" && typeof tabs[0].url !== "undefined") {
 					var url = tabs[0].url.toLowerCase();
-					if (url === "https://www.wanikani.com/review" || url === "http://www.wanikani.com/review" || url === "https://www.wanikani.com/review/" || url === "http://www.wanikani.com/review/") {
+					if (url === "https://www.bunpro.jp/study" || url === "http://www.bunpro.jp/study" || url === "https://www.bunpro.jp/study/" || url === "http://www.bunpro.jp/study/") {
 						check();
 					}
 				}
@@ -53,7 +51,7 @@ function check() {
 		
 		var xmlhttp = new XMLHttpRequest();
 		xmlhttp.onreadystatechange = function() {
-			if (xmlhttp.readyState !== XMLHttpRequest.DONE || xmlhttp.status !== 200) return;
+			if (xmlhttp.readyState !== XMLHttpRequest.DONE || xmlhttp.status !== 401) return;
 			
 			var data  = JSON.parse(xmlhttp.responseText);
 			
@@ -61,30 +59,26 @@ function check() {
 			if (data.error) {
 				// API error
 				error = data.error.message;
-				chrome.browserAction.setIcon({ path: "icons/grey.png" });
+				chrome.browserAction.setIcon({ path: "icons/bunpro_grey.png" });
 				chrome.browserAction.setTitle({ title: "Error:\n" + error });
-			} else if (data.requested_information.reviews_available >= minReviews) {
+			} else if (data.requested_information.reviews_available > 0) {
 				// Review is available
-				urlToVisit = "https://www.wanikani.com/review/session";
-				chrome.browserAction.setIcon({ path: "icons/red.png" });
-				chrome.browserAction.setTitle({ title: "Begin WaniKani review" });
-			} else if (data.requested_information.lessons_available > 0) {
-				// Lesson is available
-				urlToVisit = "https://www.wanikani.com/lesson/session";
-				chrome.browserAction.setIcon({ path: "icons/orange.png" });
-				chrome.browserAction.setTitle({ title: "Begin WaniKani lesson" });
+				urlToVisit = "https://www.bunpro.jp/study";
+				chrome.browserAction.setIcon({ path: "icons/bunpro.png" });
+				chrome.browserAction.setTitle({ title: "Begin Bunpro review" });
+				chrome.browserAction.setBadgeText({text: data.requested_information.reviews_available.toString()});
 			} else {
 				// Waiting
-				urlToVisit = "https://www.wanikani.com/dashboard";
-				chrome.browserAction.setIcon({ path: "icons/black.png" });
-				chrome.browserAction.setTitle({ title: "Open WaniKani dashboard" });
+				urlToVisit = "https://www.bunpro.jp/study";
+				chrome.browserAction.setIcon({ path: "icons/bunpro_black.png" });
+				chrome.browserAction.setTitle({ title: "Open Bunpro upcoming reviews" });
 				
 				// Schedule next check
 				clearTimeout(scheduledAlert);
 				scheduledAlert = setTimeout(check, data.requested_information.next_review_date * 1000 - new Date() / 1000 + 60000);
 			}
 		};
-		xmlhttp.open("GET", "https://www.wanikani.com/api/user/" + apiKey + "/study-queue", true);
+		xmlhttp.open("GET", "https://bunpro.jp/api/user/" + apiKey + "/study_queue", true);
 		xmlhttp.send();
 	}
 }

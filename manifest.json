@@ -1,24 +1,24 @@
 {
 	"manifest_version": 2,
-	"name": "WaniKani Review Notifier",
-	"version": "1.0.5",
+	"name": "Bunpro Review Notifier",
+	"version": "1.0.0",
 	"options_page": "options.html",
-	"description": "Displays a colored icon when reviews and lessons are ready on WaniKani",
+	"description": "Displays the number of reviews on Bunpro",
 	"icons": {
-		"128": "icons/red.png"
+		"128": "icons/bunpro.png"
 	},
 	"browser_action": {
 		"default_icon": {
-			"128": "icons/grey.png"
+			"128": "icons/bunpro_grey.png"
 		}
 	},
-	"author": "Keavon Chambers",
+	"author": "Kosklain",
 	"background": {
-		"scripts": ["wanikani.js"]
+		"scripts": ["bunpro.js"]
 	},
 	"permissions": [
 		"background",
 		"storage",
-		"https://www.wanikani.com/api/*"
+		"https://bunpro.jp/api/*"
 	]
 }

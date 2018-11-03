@@ -1,11 +1,10 @@
-var alertElement, minimumElement, keyElement, saveElement;
+var alertElement, keyElement, saveElement;
 var timeouts = [];
 var notNewlyInstalled;
 
 document.addEventListener("DOMContentLoaded", function() {
 	// Get DOM elements
 	alertElement = document.getElementById("alert");
-	minimumElement = document.getElementById("minimum");
 	keyElement = document.getElementById("key");
 	saveElement = document.getElementById("save");
 	
@@ -13,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	saveElement.addEventListener("click", saved);
 	
 	// Load saved values into page
-	chrome.storage.sync.get(["apiKey", "minReviews", "notNewlyInstalled"], loadStorage);
+	chrome.storage.sync.get(["apiKey", "notNewlyInstalled"], loadStorage);
 });
 
 function loadStorage(data) {
@@ -26,27 +25,9 @@ function loadStorage(data) {
 		keyElement.value = data.apiKey;
 	}
 	
-	// Load minimum reviews into page
-	if (data.minReviews && data.minReviews > 0) {
-		minimumElement.value = data.minReviews;
-	} else {
-		minimumElement.value = 1;
-	}
 }
 
 function saved(event) {
-	// Verify and save updated minimum value
-	if (minimumElement.value.length > 0 && parseInt(minimumElement.value) > 0) {
-		chrome.storage.sync.set({ "minReviews": parseInt(minimumElement.value) });
-	} else {
-		alertElement.innerHTML = "Minimum reviews must positive";
-		alertElement.className = "shown";
-		clearTimeouts();
-		timeouts.push(setTimeout(function() { alertElement.className = ""; minimumElement.value = 1; }, 5000));
-		timeouts.push(setTimeout(function() { alertElement.className = ""; }, 5500));
-		return;
-	}
-	
 	// Alert about empty API key input
 	if (keyElement.value.length <= 0) {
 		alertElement.innerHTML = "Missing API key";
@@ -58,7 +39,7 @@ function saved(event) {
 	}
 	
 	// Verify and save updated minimum value
-	queryAPI("https://www.wanikani.com/api/user/" + keyElement.value + "/study-queue", function(data) {
+	queryAPI("https://bunpro.jp/api/user/" + keyElement.value + "/study_queue", function(data) {
 		if (data.error) {
 			// Remove period from message string for consistency
 			var msgNoPeriod = data.error.message;
@@ -98,10 +79,11 @@ function queryAPI(path, callback) {
 	var xmlhttp = new XMLHttpRequest();
 	xmlhttp.onreadystatechange = function() {
 		if (xmlhttp.readyState === XMLHttpRequest.DONE) {
-			if (xmlhttp.status === 200) {
+			if (xmlhttp.status === 401) {
 				callback(JSON.parse(xmlhttp.responseText));
 			} else {
-				alertElement.innerHTML = "Error accessing WaniKani API";
+				alertElement.innerHTML = "Error accessing Bunpro API";
+				alertElement.innerHTML = path;
 				alertElement.className = "shown";
 				clearTimeouts();
 				timeouts.push(setTimeout(function() { alertElement.className = ""; }, 5000));
