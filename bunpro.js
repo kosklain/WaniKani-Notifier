@@ -61,6 +61,7 @@ function check() {
 				error = data.error.message;
 				chrome.browserAction.setIcon({ path: "icons/bunpro_grey.png" });
 				chrome.browserAction.setTitle({ title: "Error:\n" + error });
+				chrome.browserAction.setBadgeText({text: ""});
 			} else if (data.requested_information.reviews_available > 0) {
 				// Review is available
 				urlToVisit = "https://www.bunpro.jp/study";
@@ -76,6 +77,8 @@ function check() {
 				// Schedule next check
 				clearTimeout(scheduledAlert);
 				scheduledAlert = setTimeout(check, data.requested_information.next_review_date * 1000 - new Date() / 1000 + 60000);
+
+				chrome.browserAction.setBadgeText({text: "0"});
 			}
 		};
 		xmlhttp.open("GET", "https://bunpro.jp/api/user/" + apiKey + "/study_queue", true);
