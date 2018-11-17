@@ -19,6 +19,9 @@
 	"permissions": [
 		"background",
 		"storage",
+		"tabs",
+		"https://www.bunpro.jp/*",
+		"http://www.bunpro.jp/*",
 		"https://bunpro.jp/api/*"
 	]
 }
