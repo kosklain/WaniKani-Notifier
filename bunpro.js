@@ -32,7 +32,7 @@ function loadSettings(data) {
 			chrome.tabs.query({ "active": true, "currentWindow": true }, function(tabs) {
 				if (typeof tabs[0] !== "undefined" && typeof tabs[0].url !== "undefined") {
 					var url = tabs[0].url.toLowerCase();
-					if (url.startsWith("https://www.bunpro.jp/") || url.startsWith("http://www.bunpro.jp/") {
+					if (url.startsWith("https://www.bunpro.jp/") || url.startsWith("http://www.bunpro.jp/")) {
 						check();
 					}
 				}
