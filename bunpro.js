@@ -32,7 +32,7 @@ function loadSettings(data) {
 			chrome.tabs.query({ "active": true, "currentWindow": true }, function(tabs) {
 				if (typeof tabs[0] !== "undefined" && typeof tabs[0].url !== "undefined") {
 					var url = tabs[0].url.toLowerCase();
-					if (url === "https://www.bunpro.jp/study" || url === "http://www.bunpro.jp/study" || url === "https://www.bunpro.jp/study/" || url === "http://www.bunpro.jp/study/") {
+					if (url.startsWith("https://www.bunpro.jp/") || url.startsWith("http://www.bunpro.jp/") {
 						check();
 					}
 				}
@@ -78,7 +78,7 @@ function check() {
 				clearTimeout(scheduledAlert);
 				scheduledAlert = setTimeout(check, data.requested_information.next_review_date * 1000 - new Date() / 1000 + 60000);
 
-				chrome.browserAction.setBadgeText({text: "0"});
+				chrome.browserAction.setBadgeText({text: ""});
 			}
 		};
 		xmlhttp.open("GET", "https://bunpro.jp/api/user/" + apiKey + "/study_queue", true);
