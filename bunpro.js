@@ -76,8 +76,7 @@ function check() {
 				
 				// Schedule next check
 				clearTimeout(scheduledAlert);
-				scheduledAlert = setTimeout(check, data.requested_information.next_review_date - new Date() / 1000 + 60000);
-
+				scheduledAlert = setTimeout(check, data.requested_information.next_review_date * 1000 - new Date() + 60000);
 				chrome.browserAction.setBadgeText({text: ""});
 			}
 		};
