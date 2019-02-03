@@ -51,7 +51,7 @@ function check() {
 		
 		var xmlhttp = new XMLHttpRequest();
 		xmlhttp.onreadystatechange = function() {
-			if (xmlhttp.readyState !== XMLHttpRequest.DONE || xmlhttp.status !== 401) return;
+			if (xmlhttp.readyState !== XMLHttpRequest.DONE || xmlhttp.status !== 200) return;
 			
 			var data  = JSON.parse(xmlhttp.responseText);
 			
